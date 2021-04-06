@@ -1,14 +1,14 @@
 <?php
 
 /*
-    Copyright (C) 2020 by Clearcode <https://clearcode.cc>
+    Copyright (C) 2021 by Clearcode <https://clearcode.cc>
     and associates (see AUTHORS.txt file).
 
     This file is part of clearcode/wordpress-settings.
 
     clearcode/wordpress-settings is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
+    the Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
     clearcode/wordpress-settings is distributed in the hope that it will be useful,
@@ -21,10 +21,10 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace Clearcode\Settings\v1_0_1;
+namespace Clearcode\Settings\v1_0_2;
 
-use Clearcode\Framework\v6_1_1\Filterer;
-use Clearcode\Framework\v6_1_1\Templater;
+use Clearcode\Framework\v6_1_2\Filterer;
+use Clearcode\Framework\v6_1_2\Templater;
 
 defined( 'ABSPATH' ) or exit;
 
@@ -50,7 +50,7 @@ if ( ! class_exists( __NAMESPACE__ . '\Settings' ) ) {
                             'title' => ( isset( $page[ 'title' ] ) and is_string( $page[ 'title' ] ) ) ? $page[ 'title' ] : '',
                             'capability' => ( isset( $page[ 'capability' ] ) and is_string( $page[ 'capability' ] ) ) ? $page[ 'capability' ] : 'manage_options',
                             'render' => [
-                                'template' => ( isset( $page[ 'render' ][ 'template' ] ) and is_string( $page[ 'render' ][ 'template' ] ) ) ? $page[ 'render' ][ 'template' ] : '',
+                                'template' => ( isset( $page[ 'render' ][ 'template' ] ) and ( is_string( $page[ 'render' ][ 'template' ] ) or is_callable( $page[ 'render' ][ 'template' ] ) ) ) ? $page[ 'render' ][ 'template' ] : '',
                                 'args' => ( isset( $page[ 'render' ][ 'args' ] ) and is_array( $page[ 'render' ][ 'args' ] ) ) ? $page[ 'render' ][ 'args' ] : []
                             ],
                             'tabs' => ( isset( $page[ 'tabs' ] ) and is_array( $page[ 'tabs' ] ) and ! empty( $page[ 'tabs' ] ) ) ? array_map( function( $tab ) {
@@ -60,14 +60,14 @@ if ( ! class_exists( __NAMESPACE__ . '\Settings' ) ) {
                                         return [
                                             'title' => ( isset( $section[ 'title' ] ) and is_string( $section[ 'title' ] ) ) ? $section[ 'title' ] : '',
                                             'render' => [
-                                                'template' => ( isset( $section[ 'render' ][ 'template' ] ) and is_string( $section[ 'render' ][ 'template' ] ) ) ? $section[ 'render' ][ 'template' ] : '',
+                                                'template' => ( isset( $section[ 'render' ][ 'template' ] ) and ( is_string( $section[ 'render' ][ 'template' ] ) or is_callable( $section[ 'render' ][ 'template' ] ) ) ) ? $section[ 'render' ][ 'template' ] : '',
                                                 'args' => ( isset( $section[ 'render' ][ 'args' ] ) and is_array( $section[ 'render' ][ 'args' ] ) ) ? $section[ 'render' ][ 'args' ] : []
                                             ],
                                             'fields' => ( isset( $section[ 'fields' ] ) and is_array( $section[ 'fields' ] ) and ! empty( $section[ 'fields' ] ) ) ? array_map( function( $field ) {
                                                 return [
                                                     'title' => ( isset( $field[ 'title' ] ) and is_string( $field[ 'title' ] ) ) ? $field[ 'title' ] : '',
                                                     'render' => [
-                                                        'template' => ( isset( $field[ 'render' ][ 'template' ] ) and is_string( $field[ 'render' ][ 'template' ] ) ) ? $field[ 'render' ][ 'template' ] : '',
+                                                        'template' => ( isset( $field[ 'render' ][ 'template' ] ) and ( is_string( $field[ 'render' ][ 'template' ] ) or is_callable( $field[ 'render' ][ 'template' ] ) ) ) ? $field[ 'render' ][ 'template' ] : '',
                                                         'args' => ( isset( $field[ 'render' ][ 'args' ] ) and is_array( $field[ 'render' ][ 'args' ] ) ) ? $field[ 'render' ][ 'args' ] : []
                                                     ],
                                                     'sanitize' => ( isset( $field[ 'sanitize' ] ) and is_callable( $field[ 'sanitize' ] ) ) ? $field[ 'sanitize' ] : function( $option ) { return $option; },
@@ -204,7 +204,7 @@ if ( ! class_exists( __NAMESPACE__ . '\Settings' ) ) {
         }
 
         public function render( $template, $args ) {
-            return call_user_func( [ new Templater( [ __DIR__ . '/templates', '' ] ), 'render' ], $template, $args ) ?: ( is_callable( $template ) ? call_user_func( $template, $args ) : '' );
+            return is_callable( $template ) ? call_user_func( $template, $args ) : call_user_func( [ new Templater( [ __DIR__ . '/templates', '' ] ), 'render' ], $template, $args );
         }
         
         public function get_tab( array $tabs ) {

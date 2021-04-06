@@ -47,9 +47,8 @@ new Settings( [
                                         'render' => [
                                             'template' => 'input', // supported templates: input, textarea, select
                                             'args' => [
-                                                'type' => 'text',
                                                 'atts' => [
-                                                    'attr key' => 'attr value'
+                                                    'type' => 'text'
                                                 ],
                                                 'before' => 'before text',
                                                 'after' => 'after text',

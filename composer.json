@@ -25,11 +25,14 @@
   },
   "require": {
     "php": ">=7.2",
-    "clearcode/wordpress-framework": "6.1.1"
+    "clearcode/wordpress-framework": "6.1.2"
   },
   "autoload": {
     "psr-4": {
       "Clearcode\\Settings\\": "src/"
-    }
+    },
+    "classmap": [
+      "src"
+    ]
   }
 }

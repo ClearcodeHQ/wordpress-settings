@@ -34,7 +34,7 @@ new Settings( [
                             'section_1' => [
                                 'title' => 'section title',
                                 'render' => [
-                                    'template' => 'section', // template file path or callback function
+                                    'template' => 'section', // template file path
                                     'args' => [ 
                                         'content' => 'section description'
                                     ]

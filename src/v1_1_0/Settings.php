@@ -50,7 +50,8 @@ if ( ! class_exists( __NAMESPACE__ . '\Settings' ) ) {
                             'title' => ( isset( $page[ 'title' ] ) and is_string( $page[ 'title' ] ) ) ? $page[ 'title' ] : '',
                             'capability' => ( isset( $page[ 'capability' ] ) and is_string( $page[ 'capability' ] ) ) ? $page[ 'capability' ] : 'manage_options',
                             'render' => [
-                                'template' => ( isset( $page[ 'render' ][ 'template' ] ) and ( is_string( $page[ 'render' ][ 'template' ] ) or is_callable( $page[ 'render' ][ 'template' ] ) ) ) ? $page[ 'render' ][ 'template' ] : '',
+                                'callback' => ( isset( $page[ 'render' ][ 'callback' ] ) and is_callable( $page[ 'render' ][ 'callback' ] ) ) ? $page[ 'render' ][ 'callback' ] : null,
+                                'template' => ( isset( $page[ 'render' ][ 'template' ] ) and is_string( $page[ 'render' ][ 'template' ] ) ) ? $page[ 'render' ][ 'template' ] : '',
                                 'args' => ( isset( $page[ 'render' ][ 'args' ] ) and is_array( $page[ 'render' ][ 'args' ] ) ) ? $page[ 'render' ][ 'args' ] : []
                             ],
                             'tabs' => ( isset( $page[ 'tabs' ] ) and is_array( $page[ 'tabs' ] ) and ! empty( $page[ 'tabs' ] ) ) ? array_map( function( $tab ) {
@@ -60,14 +61,16 @@ if ( ! class_exists( __NAMESPACE__ . '\Settings' ) ) {
                                         return [
                                             'title' => ( isset( $section[ 'title' ] ) and is_string( $section[ 'title' ] ) ) ? $section[ 'title' ] : '',
                                             'render' => [
-                                                'template' => ( isset( $section[ 'render' ][ 'template' ] ) and ( is_string( $section[ 'render' ][ 'template' ] ) or is_callable( $section[ 'render' ][ 'template' ] ) ) ) ? $section[ 'render' ][ 'template' ] : '',
+                                                'callback' => ( isset( $section[ 'render' ][ 'callback' ] ) and is_callable( $section[ 'render' ][ 'callback' ] ) ) ? $section[ 'render' ][ 'callback' ] : null,
+                                                'template' => ( isset( $section[ 'render' ][ 'template' ] ) and is_string( $section[ 'render' ][ 'template' ] ) ) ? $section[ 'render' ][ 'template' ] : '',
                                                 'args' => ( isset( $section[ 'render' ][ 'args' ] ) and is_array( $section[ 'render' ][ 'args' ] ) ) ? $section[ 'render' ][ 'args' ] : []
                                             ],
                                             'fields' => ( isset( $section[ 'fields' ] ) and is_array( $section[ 'fields' ] ) and ! empty( $section[ 'fields' ] ) ) ? array_map( function( $field ) {
                                                 return [
                                                     'title' => ( isset( $field[ 'title' ] ) and is_string( $field[ 'title' ] ) ) ? $field[ 'title' ] : '',
                                                     'render' => [
-                                                        'template' => ( isset( $field[ 'render' ][ 'template' ] ) and ( is_string( $field[ 'render' ][ 'template' ] ) or is_callable( $field[ 'render' ][ 'template' ] ) ) ) ? $field[ 'render' ][ 'template' ] : '',
+                                                        'callback' => ( isset( $field[ 'render' ][ 'callback' ] ) and is_callable( $field[ 'render' ][ 'callback' ] ) ) ? $field[ 'render' ][ 'callback' ] : null,
+                                                        'template' => ( isset( $field[ 'render' ][ 'template' ] ) and is_string( $field[ 'render' ][ 'template' ] ) ) ? $field[ 'render' ][ 'template' ] : '',
                                                         'args' => ( isset( $field[ 'render' ][ 'args' ] ) and is_array( $field[ 'render' ][ 'args' ] ) ) ? $field[ 'render' ][ 'args' ] : []
                                                     ],
                                                     'sanitize' => ( isset( $field[ 'sanitize' ] ) and is_callable( $field[ 'sanitize' ] ) ) ? $field[ 'sanitize' ] : function( $option ) { return $option; },
@@ -99,7 +102,7 @@ if ( ! class_exists( __NAMESPACE__ . '\Settings' ) ) {
                             if ( isset( $tab[ 'title' ] ) )
                                 $tabs[ $tab_id ] = $tab[ 'title' ];
 
-                        echo $this->render( $page[ 'render' ][ 'template' ] ?: 'page', array_merge( $page[ 'render' ][ 'args' ],
+                        echo $this->render( $page[ 'render' ][ 'callback' ], $page[ 'render' ][ 'template' ] ?: 'page', array_merge( $page[ 'render' ][ 'args' ],
                             [
                                 'option_name' => $option_name,
                                 'option_group' => $setting[ 'group' ] ?: $page_slug,
@@ -115,7 +118,7 @@ if ( ! class_exists( __NAMESPACE__ . '\Settings' ) ) {
                         add_submenu_page(
                             $page[ 'menu' ][ 'parent' ],
                             $page[ 'title' ] ?: $title,
-                            $page[ 'menu' ][ 'icon' ] ? $this->render( 'menu', [
+                            $page[ 'menu' ][ 'icon' ] ? $this->render( null, 'menu', [
                                 'icon' => $page[ 'menu' ][ 'icon' ],
                                 'content' => $title
                             ] ) : $title,
@@ -153,7 +156,12 @@ if ( ! class_exists( __NAMESPACE__ . '\Settings' ) ) {
                             add_settings_section(
                                 $section_id,
                                 $section[ 'title' ],
-                                function() use( $section ) { echo $this->render( $section[ 'render' ][ 'template' ] ?: 'section', $section[ 'render' ][ 'args' ] ); },
+                                function() use( $section ) {
+                                    echo $this->render( $section[ 'render' ][ 'callback' ],
+                                        $section[ 'render' ][ 'template' ] ?: 'section',
+                                        $section[ 'render' ][ 'args' ]
+                                    );
+                                },
                                 $page_slug
                             );
 
@@ -162,7 +170,7 @@ if ( ! class_exists( __NAMESPACE__ . '\Settings' ) ) {
                                     $field_id,
                                     $field[ 'title' ],
                                     function( $args ) use ( $field ) {
-                                        echo $this->render( $field[ 'render' ][ 'template' ], $args );
+                                        echo $this->render( $field[ 'render' ][ 'callback' ], $field[ 'render' ][ 'template' ], $args );
                                     },
                                     $page_slug,
                                     $section_id,
@@ -203,8 +211,9 @@ if ( ! class_exists( __NAMESPACE__ . '\Settings' ) ) {
             }
         }
 
-        public function render( $template, $args ) {
-            return is_callable( $template ) ? call_user_func( $template, $args ) : call_user_func( [ new Templater( [ __DIR__ . '/templates', '' ] ), 'render' ], $template, $args );
+        public function render( $callback, $template, $args ) {
+            $callback = $callback ?: [ new Templater( [ __DIR__ . '/templates', '' ] ), 'render' ];
+            return call_user_func( $callback, $template, $args );
         }
         
         public function get_tab( array $tabs ) {

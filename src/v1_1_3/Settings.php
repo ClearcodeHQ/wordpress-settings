@@ -21,10 +21,10 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace Clearcode\Settings\v1_1_2;
+namespace Clearcode\Settings\v1_1_3;
 
-use Clearcode\Framework\v6_1_2\Filterer;
-use Clearcode\Framework\v6_1_2\Templater;
+use Clearcode\Framework\v6_1_3\Filterer;
+use Clearcode\Framework\v6_1_3\Templater;
 
 defined( 'ABSPATH' ) or exit;
 

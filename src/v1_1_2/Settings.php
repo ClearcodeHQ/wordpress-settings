@@ -1,7 +1,7 @@
 <?php
 
 /*
-    Copyright (C) 2021 by Clearcode <https://clearcode.cc>
+    Copyright (C) 2022 by Clearcode <https://clearcode.cc>
     and associates (see AUTHORS.txt file).
 
     This file is part of clearcode/wordpress-settings.
@@ -21,7 +21,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-namespace Clearcode\Settings\v1_1_1;
+namespace Clearcode\Settings\v1_1_2;
 
 use Clearcode\Framework\v6_1_2\Filterer;
 use Clearcode\Framework\v6_1_2\Templater;
